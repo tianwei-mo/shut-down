@@ -22,12 +22,12 @@ jobs:
       - name: Run unit tests
         run: python -m unittest discover -s tests -v
       - name: Compile Python
-        run: python -m py_compile src/devbox_power.py
+        run: python -m py_compile src/shut_down.py
       - name: Check shell syntax
         run: bash -n install.sh uninstall.sh src/off
       - name: Check CLI help
         run: |
-          src/devbox_power.py --help | grep -q '^usage: off'
+          src/shut_down.py --help | grep -q '^usage: off'
           ./install.sh --help >/dev/null
       - name: Validate CloudFormation
-        run: cfn-lint infra/cloudformation/devbox-power.yaml
+        run: cfn-lint infra/cloudformation/shut-down.yaml

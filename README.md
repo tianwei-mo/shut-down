@@ -48,7 +48,7 @@ sudo ./install.sh \
 
 The installer is idempotent. It installs root-owned scripts, systemd units, a
 strict sudoers entry for the public CLI, and the configuration file
-`/etc/devbox-power.conf`. See `config/devbox-power.conf.example` for every
+`/etc/shut-down.conf`. See `config/shut-down.conf.example` for every
 supported setting.
 
 Test terminal delivery without changing the deadline:
@@ -64,8 +64,8 @@ Deploy the CloudFormation stack in the same Region as the EC2 instance:
 ```bash
 aws cloudformation deploy \
   --region us-west-2 \
-  --stack-name devbox-power \
-  --template-file infra/cloudformation/devbox-power.yaml \
+  --stack-name shut-down \
+  --template-file infra/cloudformation/shut-down.yaml \
   --capabilities CAPABILITY_IAM \
   --parameter-overrides \
     InstanceId=i-0123456789abcdef0 \
@@ -121,7 +121,7 @@ is sent at 20:30.
 ## State and concurrency
 
 The current absolute deadline is stored in
-`/var/lib/devbox-power/state.json`. A future deadline survives an OS reboot. An
+`/var/lib/shut-down/state.json`. A future deadline survives an OS reboot. An
 expired deadline is replaced with the next default deadline during a later
 boot.
 
@@ -170,9 +170,9 @@ aws ec2 modify-instance-attribute \
 Inspect the timer and logs:
 
 ```bash
-systemctl status devbox-power.timer
-systemctl list-timers devbox-power.timer
-journalctl -u devbox-power-init.service -u devbox-power.service
+systemctl status shut-down.timer
+systemctl list-timers shut-down.timer
+journalctl -u shut-down-init.service -u shut-down.service
 ```
 
 Reinstall while replacing an old deadline with the configured default:
@@ -199,8 +199,8 @@ Run the local validation suite:
 
 ```bash
 python3 -m unittest discover -s tests -v
-python3 -m py_compile src/devbox_power.py
+python3 -m py_compile src/shut_down.py
 bash -n install.sh uninstall.sh src/off
 aws cloudformation validate-template \
-  --template-body file://infra/cloudformation/devbox-power.yaml
+  --template-body file://infra/cloudformation/shut-down.yaml
 ```

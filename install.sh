@@ -88,13 +88,12 @@ fi
 repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
 install -d -m 0755 /usr/local/libexec /usr/local/bin
-install -d -m 0700 /var/lib/devbox-power
-install -m 0755 "${repo_root}/src/devbox_power.py" /usr/local/libexec/devbox-power
+install -d -m 0700 /var/lib/shut-down
+install -m 0755 "${repo_root}/src/shut_down.py" /usr/local/libexec/shut-down
 install -m 0755 "${repo_root}/src/off" /usr/local/bin/off
-rm -f /usr/local/bin/devbox-power
-install -m 0644 "${repo_root}/systemd/devbox-power-init.service" /etc/systemd/system/devbox-power-init.service
-install -m 0644 "${repo_root}/systemd/devbox-power.service" /etc/systemd/system/devbox-power.service
-install -m 0644 "${repo_root}/systemd/devbox-power.timer" /etc/systemd/system/devbox-power.timer
+install -m 0644 "${repo_root}/systemd/shut-down-init.service" /etc/systemd/system/shut-down-init.service
+install -m 0644 "${repo_root}/systemd/shut-down.service" /etc/systemd/system/shut-down.service
+install -m 0644 "${repo_root}/systemd/shut-down.timer" /etc/systemd/system/shut-down.timer
 
 config_temp=$(mktemp)
 sudoers_temp=$(mktemp)
@@ -104,32 +103,32 @@ cleanup() {
 trap cleanup EXIT
 
 cat >"${config_temp}" <<EOF
-# Managed by the devbox-power installer.
+# Managed by the shut-down installer.
 TIMEZONE=${timezone}
 DEFAULT_STOP_HOUR=${default_stop_hour}
 NOTIFY_BEFORE_MINUTES=${notify_before_minutes}
 TERMINAL_USERS=${terminal_user}
-STATE_FILE=/var/lib/devbox-power/state.json
-LOCK_FILE=/run/devbox-power/state.lock
+STATE_FILE=/var/lib/shut-down/state.json
+LOCK_FILE=/run/shut-down/state.lock
 EOF
-install -m 0644 "${config_temp}" /etc/devbox-power.conf
+install -m 0644 "${config_temp}" /etc/shut-down.conf
 
 cat >"${sudoers_temp}" <<EOF
-Cmnd_Alias DEVBOX_POWER = /usr/local/libexec/devbox-power status, /usr/local/libexec/devbox-power delay *, /usr/local/libexec/devbox-power stop-at *, /usr/local/libexec/devbox-power reset, /usr/local/libexec/devbox-power notify-test
-${terminal_user} ALL=(root) NOPASSWD: DEVBOX_POWER
+Cmnd_Alias SHUT_DOWN = /usr/local/libexec/shut-down status, /usr/local/libexec/shut-down delay *, /usr/local/libexec/shut-down stop-at *, /usr/local/libexec/shut-down reset, /usr/local/libexec/shut-down notify-test
+${terminal_user} ALL=(root) NOPASSWD: SHUT_DOWN
 EOF
 visudo -cf "${sudoers_temp}" >/dev/null
-install -m 0440 "${sudoers_temp}" /etc/sudoers.d/devbox-power
+install -m 0440 "${sudoers_temp}" /etc/sudoers.d/shut-down
 
 if [[ ${reset_state} == true ]]; then
-  rm -f /var/lib/devbox-power/state.json
+  rm -f /var/lib/shut-down/state.json
 fi
 
 systemctl daemon-reload
-systemctl enable devbox-power-init.service devbox-power.timer >/dev/null
-systemctl restart devbox-power-init.service
-systemctl start devbox-power.timer
+systemctl enable shut-down-init.service shut-down.timer >/dev/null
+systemctl restart shut-down-init.service
+systemctl start shut-down.timer
 
 printf '\nInstalled off.\n'
-/usr/local/libexec/devbox-power status
+/usr/local/libexec/shut-down status
 printf '\nTest the terminal reminder with: off notify-test\n'

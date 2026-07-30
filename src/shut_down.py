@@ -23,9 +23,9 @@ from datetime import time as datetime_time
 from pathlib import Path
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-DEFAULT_CONFIG_PATH = Path("/etc/devbox-power.conf")
-DEFAULT_STATE_PATH = Path("/var/lib/devbox-power/state.json")
-DEFAULT_LOCK_PATH = Path("/run/devbox-power/state.lock")
+DEFAULT_CONFIG_PATH = Path("/etc/shut-down.conf")
+DEFAULT_STATE_PATH = Path("/var/lib/shut-down/state.json")
+DEFAULT_LOCK_PATH = Path("/run/shut-down/state.lock")
 STATE_VERSION = 1
 VALID_STATUSES = {"scheduled", "stopping"}
 

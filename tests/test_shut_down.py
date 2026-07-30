@@ -13,7 +13,7 @@ from zoneinfo import ZoneInfo
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
-from devbox_power import (
+from shut_down import (
     Config,
     PowerError,
     build_parser,
@@ -142,7 +142,7 @@ class ParsingTests(unittest.TestCase):
         self.assertTrue(build_parser().format_usage().startswith("usage: off"))
         message = terminal_message("test", ["body"])
         self.assertIn("[off]", message)
-        self.assertNotIn("[devbox-power]", message)
+        self.assertNotIn("[shut-down]", message)
 
 
 class CommandTests(unittest.TestCase):
@@ -171,7 +171,7 @@ class CommandTests(unittest.TestCase):
     def tearDown(self) -> None:
         self.temporary_directory.cleanup()
 
-    @patch("devbox_power.notify_terminals", return_value=0)
+    @patch("shut_down.notify_terminals", return_value=0)
     def test_warning_retries_when_no_terminal_received_it(self, _: Mock) -> None:
         with redirect_stdout(io.StringIO()):
             command_check(self.config, epoch("2026-07-30T18:30:00+00:00"))
@@ -179,7 +179,7 @@ class CommandTests(unittest.TestCase):
         self.assertIsNotNone(state)
         self.assertIsNone(state["warning_sent_for"])
 
-    @patch("devbox_power.notify_terminals", return_value=2)
+    @patch("shut_down.notify_terminals", return_value=2)
     def test_warning_is_recorded_after_terminal_delivery(self, _: Mock) -> None:
         with redirect_stdout(io.StringIO()):
             command_check(self.config, epoch("2026-07-30T18:30:00+00:00"))
@@ -187,8 +187,8 @@ class CommandTests(unittest.TestCase):
         self.assertIsNotNone(state)
         self.assertEqual(state["warning_sent_for"], self.stop_at)
 
-    @patch("devbox_power.subprocess.run")
-    @patch("devbox_power.notify_terminals", return_value=1)
+    @patch("shut_down.subprocess.run")
+    @patch("shut_down.notify_terminals", return_value=1)
     def test_due_deadline_calls_poweroff(self, _: Mock, run_mock: Mock) -> None:
         run_mock.return_value = Mock(returncode=0)
         with redirect_stdout(io.StringIO()):

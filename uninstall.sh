@@ -14,20 +14,19 @@ if [[ ${EUID} -ne 0 ]]; then
   exit 1
 fi
 
-systemctl disable --now devbox-power.timer devbox-power-init.service >/dev/null 2>&1 || true
-rm -f /etc/systemd/system/devbox-power-init.service
-rm -f /etc/systemd/system/devbox-power.service
-rm -f /etc/systemd/system/devbox-power.timer
-rm -f /etc/sudoers.d/devbox-power
-rm -f /etc/devbox-power.conf
+systemctl disable --now shut-down.timer shut-down-init.service >/dev/null 2>&1 || true
+rm -f /etc/systemd/system/shut-down-init.service
+rm -f /etc/systemd/system/shut-down.service
+rm -f /etc/systemd/system/shut-down.timer
+rm -f /etc/sudoers.d/shut-down
+rm -f /etc/shut-down.conf
 rm -f /usr/local/bin/off
-rm -f /usr/local/bin/devbox-power
-rm -f /usr/local/libexec/devbox-power
-rm -rf /run/devbox-power
+rm -f /usr/local/libexec/shut-down
+rm -rf /run/shut-down
 systemctl daemon-reload
 
 if [[ ${purge_state} == true ]]; then
-  rm -rf /var/lib/devbox-power
+  rm -rf /var/lib/shut-down
 fi
 
-printf 'Uninstalled devbox-power.\n'
+printf 'Uninstalled shut-down.\n'

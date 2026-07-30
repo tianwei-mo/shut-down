@@ -25,7 +25,7 @@ Parameters:
     Description: Local minute at which the EC2 StartInstances API is called.
   ScheduleName:
     Type: String
-    Default: devbox-power-start
+    Default: shut-down-start
     AllowedPattern: ^[0-9A-Za-z-_.]+$
     MaxLength: 64
 

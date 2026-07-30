@@ -1,0 +1,9 @@
+[Unit]
+Description=Check the devbox shutdown deadline
+Requires=shut-down-init.service
+After=shut-down-init.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/libexec/shut-down check
+TimeoutStartSec=30

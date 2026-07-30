@@ -1,12 +1,12 @@
 [Unit]
 Description=Check the devbox shutdown deadline every minute
-After=devbox-power-init.service
+After=shut-down-init.service
 
 [Timer]
 OnCalendar=*-*-* *:*:00
 AccuracySec=1s
 Persistent=true
-Unit=devbox-power.service
+Unit=shut-down.service
 
 [Install]
 WantedBy=timers.target
