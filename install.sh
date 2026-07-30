@@ -90,7 +90,8 @@ repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 install -d -m 0755 /usr/local/libexec /usr/local/bin
 install -d -m 0700 /var/lib/devbox-power
 install -m 0755 "${repo_root}/src/devbox_power.py" /usr/local/libexec/devbox-power
-install -m 0755 "${repo_root}/src/devbox-power" /usr/local/bin/devbox-power
+install -m 0755 "${repo_root}/src/off" /usr/local/bin/off
+rm -f /usr/local/bin/devbox-power
 install -m 0644 "${repo_root}/systemd/devbox-power-init.service" /etc/systemd/system/devbox-power-init.service
 install -m 0644 "${repo_root}/systemd/devbox-power.service" /etc/systemd/system/devbox-power.service
 install -m 0644 "${repo_root}/systemd/devbox-power.timer" /etc/systemd/system/devbox-power.timer
@@ -129,6 +130,6 @@ systemctl enable devbox-power-init.service devbox-power.timer >/dev/null
 systemctl restart devbox-power-init.service
 systemctl start devbox-power.timer
 
-printf '\nInstalled devbox-power.\n'
+printf '\nInstalled off.\n'
 /usr/local/libexec/devbox-power status
-printf '\nTest the terminal reminder with: devbox-power notify-test\n'
+printf '\nTest the terminal reminder with: off notify-test\n'

@@ -324,7 +324,7 @@ def format_remaining(seconds: int) -> str:
 
 def terminal_message(title: str, lines: list[str]) -> str:
     body = "\n".join(lines)
-    return f"\n\a\033[1;31m[devbox-power] {title}\033[0m\n{body}\n\n"
+    return f"\n\a\033[1;31m[off] {title}\033[0m\n{body}\n\n"
 
 
 def notify_terminals(config: Config, message: str) -> int:
@@ -465,8 +465,8 @@ def command_check(config: Config, now_epoch: int) -> int:
                 "scheduled shutdown approaching",
                 [
                     f"This EC2 instance will shut down at {format_deadline(stop_at, config)}.",
-                    "To delay it: devbox-power delay 1",
-                    "To choose an hour: devbox-power stop-at 22",
+                    "To delay it: off delay 1",
+                    "To choose an hour: off stop-at 22",
                 ],
             )
             warning_count = notify_terminals(config, message)
@@ -515,7 +515,7 @@ def caller_identity() -> str:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Manage the local shutdown deadline for a cloud devbox"
+        prog="off", description="Manage the local shutdown deadline for a cloud devbox"
     )
     parser.add_argument(
         "--config",
@@ -567,7 +567,7 @@ def main(argv: list[str] | None = None) -> int:
             return command_notify_test(config)
         parser.error(f"Unknown command: {args.command}")
     except PowerError as exc:
-        print(f"devbox-power: {exc}", file=sys.stderr)
+        print(f"off: {exc}", file=sys.stderr)
         return 2
     return 0
 

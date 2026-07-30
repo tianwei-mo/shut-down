@@ -16,6 +16,7 @@ sys.path.insert(0, str(PROJECT_ROOT / "src"))
 from devbox_power import (
     Config,
     PowerError,
+    build_parser,
     command_check,
     delay_state,
     evaluate_state,
@@ -26,6 +27,7 @@ from devbox_power import (
     read_state,
     set_stop_hour,
     state_lock,
+    terminal_message,
     write_state,
 )
 
@@ -135,6 +137,12 @@ class ParsingTests(unittest.TestCase):
     def test_parse_stop_hour_rejects_minutes(self) -> None:
         with self.assertRaises(PowerError):
             parse_stop_hour("19:30")
+
+    def test_public_program_name_is_off(self) -> None:
+        self.assertTrue(build_parser().format_usage().startswith("usage: off"))
+        message = terminal_message("test", ["body"])
+        self.assertIn("[off]", message)
+        self.assertNotIn("[devbox-power]", message)
 
 
 class CommandTests(unittest.TestCase):

@@ -16,8 +16,8 @@ EventBridge Scheduler (09:30 local time)
 
 EC2 systemd timer (once per minute)
   |-- 30 minutes before deadline -> write a warning to active /dev/pts terminals
-  |-- devbox-power delay 2        -> move the deadline by two hours
-  |-- devbox-power stop-at 22     -> use the next local 22:00 deadline
+  |-- off delay 2                 -> move the deadline by two hours
+  |-- off stop-at 22              -> use the next local 22:00 deadline
   `-- at the deadline             -> systemctl poweroff -> EC2 stopped
 ```
 
@@ -54,7 +54,7 @@ supported setting.
 Test terminal delivery without changing the deadline:
 
 ```bash
-devbox-power notify-test
+off notify-test
 ```
 
 ## Deploy scheduled startup
@@ -89,20 +89,20 @@ call if the machine must be ready to use at exactly 09:30.
 Show the current deadline:
 
 ```bash
-devbox-power status
+off status
 ```
 
 Delay the existing deadline by whole hours:
 
 ```bash
-devbox-power delay 2
+off delay 2
 ```
 
 Set the next occurrence of a specific whole local hour:
 
 ```bash
-devbox-power stop-at 22
-devbox-power stop-at 09:00
+off stop-at 22
+off stop-at 09:00
 ```
 
 If that hour has already passed today, `stop-at` uses tomorrow. Minutes other
@@ -111,7 +111,7 @@ than `:00` are rejected.
 Restore the next configured default hour:
 
 ```bash
-devbox-power reset
+off reset
 ```
 
 For example, if the default deadline is 19:00 and `delay 2` runs at 18:45, the
@@ -147,7 +147,7 @@ To move to another EC2 instance:
 1. Clone this repository and run `install.sh` on the new machine.
 2. Confirm its instance-initiated shutdown behavior is `stop`.
 3. Redeploy the CloudFormation stack with the new `InstanceId`.
-4. Run `devbox-power notify-test`.
+4. Run `off notify-test`.
 
 The old deadline normally does not need to migrate; a new host initializes the
 next default 19:00 deadline. Copy `state.json` only when an active extension
@@ -200,7 +200,7 @@ Run the local validation suite:
 ```bash
 python3 -m unittest discover -s tests -v
 python3 -m py_compile src/devbox_power.py
-bash -n install.sh uninstall.sh src/devbox-power
+bash -n install.sh uninstall.sh src/off
 aws cloudformation validate-template \
   --template-body file://infra/cloudformation/devbox-power.yaml
 ```

@@ -24,8 +24,10 @@ jobs:
       - name: Compile Python
         run: python -m py_compile src/devbox_power.py
       - name: Check shell syntax
-        run: bash -n install.sh uninstall.sh src/devbox-power
+        run: bash -n install.sh uninstall.sh src/off
       - name: Check CLI help
-        run: src/devbox_power.py --help >/dev/null && ./install.sh --help >/dev/null
+        run: |
+          src/devbox_power.py --help | grep -q '^usage: off'
+          ./install.sh --help >/dev/null
       - name: Validate CloudFormation
         run: cfn-lint infra/cloudformation/devbox-power.yaml

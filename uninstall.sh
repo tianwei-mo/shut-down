@@ -20,6 +20,7 @@ rm -f /etc/systemd/system/devbox-power.service
 rm -f /etc/systemd/system/devbox-power.timer
 rm -f /etc/sudoers.d/devbox-power
 rm -f /etc/devbox-power.conf
+rm -f /usr/local/bin/off
 rm -f /usr/local/bin/devbox-power
 rm -f /usr/local/libexec/devbox-power
 rm -rf /run/devbox-power
