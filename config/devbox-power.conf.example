@@ -1,0 +1,15 @@
+# IANA timezone used for local deadlines and terminal messages.
+TIMEZONE=America/Los_Angeles
+
+# Daily default deadline, expressed as a whole local clock hour.
+DEFAULT_STOP_HOUR=19
+
+# How long before the current deadline to notify active terminals.
+NOTIFY_BEFORE_MINUTES=30
+
+# Comma-separated users whose /dev/pts terminals receive notifications.
+TERMINAL_USERS=ubuntu
+
+# Root-owned runtime paths.
+STATE_FILE=/var/lib/devbox-power/state.json
+LOCK_FILE=/run/devbox-power/state.lock

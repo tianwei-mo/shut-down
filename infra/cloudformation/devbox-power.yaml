@@ -1,0 +1,77 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Start one EC2 development instance on a daily EventBridge Scheduler schedule.
+
+Parameters:
+  InstanceId:
+    Type: String
+    Description: EC2 instance to start.
+    AllowedPattern: ^i-[0-9a-f]+$
+  Timezone:
+    Type: String
+    Default: America/Los_Angeles
+    Description: IANA timezone used to evaluate the startup schedule.
+    AllowedPattern: ^[A-Za-z0-9_+./-]+$
+  StartHour:
+    Type: Number
+    Default: 9
+    MinValue: 0
+    MaxValue: 23
+    Description: Whole local hour at which the EC2 StartInstances API is called.
+  StartMinute:
+    Type: Number
+    Default: 30
+    MinValue: 0
+    MaxValue: 59
+    Description: Local minute at which the EC2 StartInstances API is called.
+  ScheduleName:
+    Type: String
+    Default: devbox-power-start
+    AllowedPattern: ^[0-9A-Za-z-_.]+$
+    MaxLength: 64
+
+Resources:
+  SchedulerExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Description: Allows EventBridge Scheduler to start one EC2 instance.
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: scheduler.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: StartConfiguredInstance
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: ec2:StartInstances
+                Resource: !Sub arn:${AWS::Partition}:ec2:${AWS::Region}:${AWS::AccountId}:instance/${InstanceId}
+
+  DailyStartSchedule:
+    Type: AWS::Scheduler::Schedule
+    Properties:
+      Name: !Ref ScheduleName
+      Description: !Sub Start ${InstanceId} every day at ${StartHour}:${StartMinute} in ${Timezone}.
+      FlexibleTimeWindow:
+        Mode: "OFF"
+      ScheduleExpression: !Sub cron(${StartMinute} ${StartHour} * * ? *)
+      ScheduleExpressionTimezone: !Ref Timezone
+      State: ENABLED
+      Target:
+        Arn: !Sub arn:${AWS::Partition}:scheduler:::aws-sdk:ec2:startInstances
+        Input: !Sub '{"InstanceIds":["${InstanceId}"]}'
+        RoleArn: !GetAtt SchedulerExecutionRole.Arn
+        RetryPolicy:
+          MaximumEventAgeInSeconds: 900
+          MaximumRetryAttempts: 3
+
+Outputs:
+  ScheduleName:
+    Description: EventBridge Scheduler schedule name.
+    Value: !Ref DailyStartSchedule
+  SchedulerRoleArn:
+    Description: Least-privilege role assumed by EventBridge Scheduler.
+    Value: !GetAtt SchedulerExecutionRole.Arn

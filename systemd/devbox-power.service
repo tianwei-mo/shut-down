@@ -1,0 +1,9 @@
+[Unit]
+Description=Check the devbox shutdown deadline
+Requires=devbox-power-init.service
+After=devbox-power-init.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/libexec/devbox-power check
+TimeoutStartSec=30

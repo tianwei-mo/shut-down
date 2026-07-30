@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+controller=/usr/local/libexec/devbox-power
+
+if [[ ${EUID} -eq 0 ]]; then
+  exec "${controller}" "$@"
+fi
+
+exec sudo -n "${controller}" "$@"

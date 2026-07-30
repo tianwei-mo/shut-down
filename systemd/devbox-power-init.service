@@ -1,0 +1,12 @@
+[Unit]
+Description=Initialize the devbox shutdown deadline
+After=local-fs.target
+Before=devbox-power.timer
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/libexec/devbox-power init
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
